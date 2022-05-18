@@ -1,0 +1,79 @@
+# Configuration for object detection node
+/object_det:
+  ros__parameters:
+    # print debug output
+    debug: true
+    # rotate images?
+    rotation: 270
+    # image source topic
+    topic: "/camera_left/color/image_small"
+    print_detections: false
+    print_fps: true
+    det_topic: "/object_det/objects"
+    fps_topic: "/object_det/fps"
+    max_fps: 16.0
+
+    ### --------------- ###
+    # YOLO STUFF
+    #(Valid DLA-Cores: 0 or 1) -1 disables the usage of DLAs
+    DLA_CORE: 0
+    # Use 16-Bit floating point units (this is automatically enabled when DLAs are used)
+    USE_FP16: true
+    ONNX_FILE: "/opt/dev/DL_Models/yolo_object/model/yolov4-608.onnx"
+    CONFIG_FILE: "/opt/dev/DL_Models/yolo_object/model/yolov4-608.cfg"
+    # If the engine file is not present the engine is build
+    ENGINE_FILE: "/opt/dev/DL_Models/yolo_object/engine/yolov4-608_dla0.engine"
+    CLASS_FILE: "/opt/dev/DL_Models/yolo_object/model/coco.names"
+    DETECT_STR: "DETECTED_OBJECTS"
+    AMOUNT_STR: "DETECTED_OBJECTS_AMOUNT"
+    FPS_STR: "OBJECT_DET_FPS"
+    # Valid Versions are 3 and 4
+    YOLO_VERSION: 4
+    #Valid values are:
+    # true  - Tiny
+    # false - Normal
+    YOLO_TINY: false
+    YOLO_THRESHOLD: 0.3
+
+
+
+# Configuration for gesture detection node
+/gesture_det:
+  ros__parameters:
+    # print debug output
+    debug: true
+    # rotate images?
+    rotation: 90    
+    # image source topic
+    topic: "/camera_left/color/image_small"
+    print_detections: false
+    print_fps: true
+    det_topic: "/gesture_det/objects"
+    fps_topic: "/gesture_det/fps"
+    max_fps: 16.0
+
+    ### --------------- ###
+    # YOLO STUFF
+      #(Valid DLA-Cores: 0 or 1) -1 disables the usage of DLAs
+    DLA_CORE: 1
+    # Use 16-Bit floating point units (this is automatically enabled when DLAs are used)
+    USE_FP16: true
+    ONNX_FILE: "/opt/dev/DL_Models/yolo_hand/model/yolov4-tiny-hand++-3l-608.onnx"
+    CONFIG_FILE: "/opt/dev/DL_Models/yolo_hand/model/yolov4-tiny-hand++-3l.cfg"
+    # If the engine file is not present the engine is build
+    ENGINE_FILE: "/opt/dev/DL_Models/yolo_hand/engine/yolov4-tiny-hand++-3l-608-dla1.engine"
+    CLASS_FILE: "/opt/dev/DL_Models/yolo_hand/model/hand++.names"
+
+    DETECT_STR: "DETECTED_GESTURES"
+    AMOUNT_STR: "DETECTED_GESTURES_AMOUNT"
+    FPS_STR: "GESTURE_DET_FPS"
+    # Valid Versions are 3 and 4
+    YOLO_VERSION: 4
+    #Valid values are:
+    # true  - Tiny
+    # false - Normal
+    YOLO_TINY: true
+
+    YOLO_THRESHOLD: 0.3
+
+    
