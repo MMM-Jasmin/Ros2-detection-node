@@ -8,8 +8,8 @@ const double ONE_SECOND            = 1000.0; // One second in milliseconds
 /**
  * @brief Contructor.
  */
-DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeOptions().use_intra_process_comms(true)) {
-
+DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeOptions().use_intra_process_comms(true)) 
+{
 	this->declare_parameter("rotation", 0);
 	this->declare_parameter("debug", false);
 	this->declare_parameter("topic", "");

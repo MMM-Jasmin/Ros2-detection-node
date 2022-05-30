@@ -22,7 +22,7 @@ set(PROJECT_LIBRARY ${PROJECT_NAME}_lib)
 set(CMAKE_CXX_STANDARD 17)
 
 # Build YoloLayer Plugin
-#add_subdirectory(plugins)
+add_subdirectory(plugins)
 
 find_package(TENSORRT PATHS cmake/modules REQUIRED)
 
