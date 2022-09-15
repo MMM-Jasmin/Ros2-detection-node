@@ -69,14 +69,15 @@ int main(int argc, char** argv)
 
 
 	
-
-	std::shared_ptr<DetectionNode> image_node = std::make_shared<DetectionNode>(node_name);
+	
+	std::shared_ptr<DetectionNode> obj_det_node = std::make_shared<DetectionNode>(node_name);
 	//image_node->setExitSignal(&exit_request);
-	image_node->init();
+	obj_det_node->init();
 
-	rclcpp::executors::SingleThreadedExecutor executor;
-	executor.add_node(image_node);
-
+	rclcpp::executors::MultiThreadedExecutor executor(rclcpp::executor::ExecutorArgs(), 2, false);
+	//rclcpp::executors::SingleThreadedExecutor executor;
+	executor.add_node(obj_det_node);
+	//rclcpp::spin(obj_det_node);
 	executor.spin();
 	executor.cancel();
 	rclcpp::shutdown();

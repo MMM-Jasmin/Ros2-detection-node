@@ -8,7 +8,7 @@ const double ONE_SECOND            = 1000.0; // One second in milliseconds
 /**
  * @brief Contructor.
  */
-DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeOptions().use_intra_process_comms(true)) 
+DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeOptions().use_intra_process_comms(false)) 
 {
 	this->declare_parameter("rotation", 0);
 	this->declare_parameter("debug", false);
@@ -18,6 +18,8 @@ DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeO
 	this->declare_parameter("det_topic", "test/det");
 	this->declare_parameter("fps_topic", "test/fps");
 	this->declare_parameter("max_fps", 30.0f);
+	this->declare_parameter("qos_sensor_data", true);
+	this->declare_parameter("qos_history_depth", 10);
 	 
     this->declare_parameter("DLA_CORE", 0);
     this->declare_parameter("USE_FP16", true);
@@ -55,8 +57,8 @@ rcl_interfaces::msg::SetParametersResult DetectionNode::parametersCallback(const
 void DetectionNode::init() {
 
 
-	int YOLO_VERSION, DLA_CORE;
-	bool USE_FP16, YOLO_TINY;
+	int YOLO_VERSION, DLA_CORE, qos_history_depth;
+	bool USE_FP16, YOLO_TINY, qos_sensor_data;
 	float YOLO_THRESHOLD;
 	std::string ONNX_FILE, CONFIG_FILE, ENGINE_FILE, CLASS_FILE, ros_topic, det_topic, fps_topic;
 
@@ -87,6 +89,8 @@ void DetectionNode::init() {
 	this->get_parameter("rotation", m_image_rotation);
 	this->get_parameter("print_detections", m_print_detections);
 	this->get_parameter("print_fps", m_print_fps);
+	this->get_parameter("qos_sensor_data", qos_sensor_data);
+	this->get_parameter("qos_history_depth", qos_history_depth);
 
 	YoloType yoloType = YoloType::NON;
 
@@ -116,16 +120,41 @@ void DetectionNode::init() {
 
 	m_elapsedTime = 0;
 	m_timer.Start();
+	m_last_str = "";
 
 	std::cout << "-- subscribe to : " << ros_topic <<  " --" << std::endl;
+
+	if(qos_sensor_data){
+		std::cout << "using ROS2 qos_sensor_data" << std::endl;
+		m_qos_profile = rclcpp::SensorDataQoS();
+	}
+
+	m_qos_profile = m_qos_profile.keep_last(qos_history_depth);
+	m_qos_profile = m_qos_profile.lifespan(std::chrono::milliseconds(500));
+	m_qos_profile = m_qos_profile.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+	m_qos_profile = m_qos_profile.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+	
+
+	m_qos_profile_sysdef = m_qos_profile_sysdef.keep_last(qos_history_depth);
+	m_qos_profile_sysdef = m_qos_profile_sysdef.lifespan(std::chrono::milliseconds(500));
+	m_qos_profile_sysdef = m_qos_profile_sysdef.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+	m_qos_profile_sysdef = m_qos_profile_sysdef.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+	
+
+	
+	//m_qos_profile_sysdef = m_qos_profile_sysdef.keep_last(qos_history_depth);
+	//m_qos_profile = m_qos_profile.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+	//m_qos_profile = m_qos_profile.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+	//m_qos_profile = m_qos_profile.deadline(std::chrono::nanoseconds(static_cast<int>(1e9 / 30)));
+
 
 	m_image_small_subscription = this->create_subscription<sensor_msgs::msg::Image>( ros_topic, m_qos_profile, std::bind(&DetectionNode::imageSmallCallback, this, std::placeholders::_1));
 	//cv::namedWindow(m_window_name_image_small, cv::WINDOW_AUTOSIZE);
 
 	std::cout << "-- create topics for publishing --" << std::endl;
 
-	m_detection_publisher   = this->create_publisher<std_msgs::msg::String>(det_topic, m_qos_profile);
-	m_fps_publisher    		= this->create_publisher<std_msgs::msg::String>(fps_topic, m_qos_profile);
+	m_detection_publisher   = this->create_publisher<std_msgs::msg::String>(det_topic, m_qos_profile_sysdef);
+	m_fps_publisher    		= this->create_publisher<std_msgs::msg::String>(fps_topic, m_qos_profile_sysdef);
 
 	std::cout << "+==========[ init done ]==========+" << std::endl;
 
@@ -242,7 +271,7 @@ void DetectionNode::printDetections(const TrackingObjects& trackers)
 	for (const auto& [i, t] : enumerate(trackers))
 	{
 		BBox centerBox = toCenter(t.bBox);
-		str << string_format("{\"TrackID\": %i, \"name\": \"%s\", \"center\": [%.5f,%.5f], \"w_h\": [%.5f,%.5f]}", t.trackingID, t.name.c_str(), centerBox.x, centerBox.y, centerBox.width, centerBox.height);
+		str << string_format("{\"TrackID\": %i, \"name\": \"%s\", \"center\": [%.3f,%.3f], \"w_h\": [%.3f,%.3f]}", t.trackingID, t.name.c_str(), roundf(centerBox.x*1000.0f)/1000.0f , roundf(centerBox.y*1000.0f)/1000.0f, roundf(centerBox.width*1000.0f)/1000.0f, roundf(centerBox.height*1000.0f)/1000.0f);
 		// Prevent a trailing ',' for the last element
 		if (i + 1 < trackers.size()) str << ", ";
 	}
@@ -257,8 +286,6 @@ void DetectionNode::printDetections(const TrackingObjects& trackers)
 
 	if (m_print_detections)
 		RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-
-
 	
 }
 

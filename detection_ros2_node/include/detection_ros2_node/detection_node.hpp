@@ -35,7 +35,7 @@ private:
 	float m_maxFPS;
 	int m_image_rotation;
 	bool m_print_detections, m_print_fps;
-	std::string m_DETECT_STR, m_AMOUNT_STR, m_FPS_STR;
+	std::string m_DETECT_STR, m_AMOUNT_STR, m_FPS_STR, m_last_str;
 
 	Timer m_timer;        // Timer used to measure the time required for one iteration
 	double m_elapsedTime; // Sum of the elapsed time, used to check if one second has passed
@@ -61,11 +61,12 @@ private:
 	double m_loop_duration_image_small = 0.0;
 	double m_loop_duration_depth = 0.0;
 
-	rclcpp::QoS m_qos_profile = rclcpp::SensorDataQoS();
-	//rclcpp::QoS m_qos_profile = rclcpp::SystemDefaultsQoS();
 
+	rclcpp::QoS m_qos_profile = rclcpp::SystemDefaultsQoS();
+	rclcpp::QoS m_qos_profile_sysdef = rclcpp::SystemDefaultsQoS();
+	
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_detection_publisher 	= nullptr;
-	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_fps_publisher 	= nullptr;
+	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_fps_publisher 	=	 nullptr;
 
 	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_small_subscription;
 
