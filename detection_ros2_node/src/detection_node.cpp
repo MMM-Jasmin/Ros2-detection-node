@@ -114,7 +114,7 @@ void DetectionNode::init() {
 	m_pSortTrackers = new SORT[m_pYolo->GetClassCount()];
 	////// Initialize SORT tracker for each class
 	for (std::size_t i = 0; i < m_pYolo->GetClassCount(); i++)
-		m_pSortTrackers[i] = SORT(5, 3);
+		m_pSortTrackers[i] = SORT(30, 5);
 
 	m_lastTrackings.clear();
 
@@ -130,13 +130,13 @@ void DetectionNode::init() {
 	}
 
 	m_qos_profile = m_qos_profile.keep_last(qos_history_depth);
-	m_qos_profile = m_qos_profile.lifespan(std::chrono::milliseconds(500));
+	//m_qos_profile = m_qos_profile.lifespan(std::chrono::milliseconds(500));
 	m_qos_profile = m_qos_profile.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
 	m_qos_profile = m_qos_profile.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
 	
 
 	m_qos_profile_sysdef = m_qos_profile_sysdef.keep_last(qos_history_depth);
-	m_qos_profile_sysdef = m_qos_profile_sysdef.lifespan(std::chrono::milliseconds(500));
+	//m_qos_profile_sysdef = m_qos_profile_sysdef.lifespan(std::chrono::milliseconds(500));
 	m_qos_profile_sysdef = m_qos_profile_sysdef.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
 	m_qos_profile_sysdef = m_qos_profile_sysdef.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
 	
@@ -178,19 +178,20 @@ void DetectionNode::imageSmallCallback(sensor_msgs::msg::Image::SharedPtr img_ms
 		cv::rotate(color_image, color_image, cv::ROTATE_90_COUNTERCLOCKWISE); 
 
 	m_frame = color_image;
+
 	ProcessNextFrame();
 	ProcessDetections();
 	
 	m_frameCnt++;
 	CheckFPS(&m_frameCnt);
 
-	//cv::setWindowTitle(m_window_name_image_small, std::to_string(m_loop_duration_image_small));
-	//cv::setWindowTitle(m_window_name, std::to_string(0.0));
+	//v::setWindowTitle(m_window_name_image_small, std::to_string(m_loop_duration_image_small));
 	//cv::cvtColor(color_image, color_image, cv::COLOR_RGB2BGR);
 	//imshow(m_window_name_image_small, color_image);
 
 	//if (!(cv::waitKey(1) < 0 && cv::getWindowProperty(m_window_name_image_small, cv::WND_PROP_AUTOSIZE) >= 0))
 	//	rclcpp::shutdown();
+
 
 	//m_loop_duration_image_small = (hires_clock::now() - m_callback_time_image_small).count() / 1e6;
 	//m_callback_time_image_small = hires_clock::now();
@@ -282,10 +283,17 @@ void DetectionNode::printDetections(const TrackingObjects& trackers)
 
 	auto message = std_msgs::msg::String();
 	message.data = str.str();
-	m_detection_publisher->publish(message);
+	try{
+		m_detection_publisher->publish(message);
+	}
+	catch (...) {
+		RCLCPP_INFO(this->get_logger(), "hmm publishing dets has failed!! ");
+	}
 
 	if (m_print_detections)
 		RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int32_t>(std::round(5))));
 	
 }
 
@@ -297,13 +305,6 @@ void DetectionNode::CheckFPS(uint64_t* pFrameCnt)
 		double itrTime      = m_timer.GetElapsedTimeInMilliSec();
 		double fps;
 
-
-		if (m_timer.GetElapsedTimeInMilliSec() < minFrameTime)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int32_t>(std::round(minFrameTime - itrTime))));
-			m_elapsedTime += minFrameTime;
-		}
-		else
 		m_elapsedTime += itrTime;
 
 		fps = 1000 / (m_elapsedTime / (*pFrameCnt));
@@ -331,7 +332,13 @@ void DetectionNode::PrintFPS(const float fps, const float itrTime)
 
 	auto message = std_msgs::msg::String();
 	message.data = str.str();
-	m_fps_publisher->publish(message);
+	
+	try{
+		m_fps_publisher->publish(message);
+	}
+  	catch (...) {
+    	RCLCPP_INFO(this->get_logger(), "m_fps_publisher: hmm publishing dets has failed!! ");
+  	}
 
 		
 	if (m_print_fps)

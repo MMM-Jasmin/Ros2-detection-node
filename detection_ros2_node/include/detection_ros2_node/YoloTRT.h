@@ -71,7 +71,7 @@ class YoloTRT
 public:
 	YoloTRT(const std::string& onnxFile, const std::string& configFile, const std::string& engineFile,
 			const std::string& classFile, const int32_t& dlaCore = 0, const bool& useFP16 = false,
-			const bool& autoLoad = false, const float& threshold = 0.3f, const YoloType yoloType = YoloType::NON) :
+			const bool& autoLoad = false, const float& threshold = 0.25f, const YoloType yoloType = YoloType::NON) :
 		m_onnxFile(onnxFile),
 		m_engineFile(engineFile),
 		m_dlaCore(dlaCore),

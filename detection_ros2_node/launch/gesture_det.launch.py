@@ -5,7 +5,7 @@ from launch_ros.actions import Node
 from launch import actions
 
 ROS_DISTRO = os.getenv('ROS_DISTRO')
-if not ((ROS_DISTRO == "eloquent") or (ROS_DISTRO == "foxy")):
+if not ((ROS_DISTRO == "eloquent") or (ROS_DISTRO == "foxy") or (ROS_DISTRO == "humble")):
 	print("ROS2 distribution " + ROS_DISTRO + " not recognised by launch file!")
 	actions.Shutdown(reason="ROS2 distribution " + ROS_DISTRO + " not recognised by launch file!")
 		
@@ -43,6 +43,21 @@ def generate_launch_description():
 			),
 		])
 	elif ROS_DISTRO == "foxy":
+		return LaunchDescription([
+			Node(
+				package = package,
+				namespace = namespace,
+				executable = executable,
+				name = 'gesture_det',
+				parameters = [config],
+				#parameter = {"debug": True},
+				output = 'screen',
+				arguments = ['--name', 'gesture_det'],
+				#emulate_tty = True,
+				#arguments = [('__log_level:=debug')]
+			),
+		])
+	elif ROS_DISTRO == "humble":
 		return LaunchDescription([
 			Node(
 				package = package,

@@ -74,8 +74,8 @@ int main(int argc, char** argv)
 	//image_node->setExitSignal(&exit_request);
 	obj_det_node->init();
 
-	rclcpp::executors::MultiThreadedExecutor executor(rclcpp::executor::ExecutorArgs(), 2, false);
-	//rclcpp::executors::SingleThreadedExecutor executor;
+	//rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2, false);
+	rclcpp::executors::SingleThreadedExecutor executor;
 	executor.add_node(obj_det_node);
 	//rclcpp::spin(obj_det_node);
 	executor.spin();
