@@ -44,7 +44,7 @@ include/3rdParty/nvidia
 
 include_directories(include/${PROJECT_NAME} plugins)
 
-link_directories(${PROJECT_SOURCE_DIR}/libs)
+link_directories(${CMAKE_BINARY_DIR}/plugins)
 
 ##############
 ## Compiler ##
@@ -69,9 +69,13 @@ set_target_properties(${PROJECT_BINARY}
 		CXX_EXTENSIONS YES
 )
 
+
+add_dependencies(${PROJECT_BINARY} YoloLayerPlugin)
+add_dependencies(${PROJECT_LIBRARY} YoloLayerPlugin)
+
 # Filesystem
-target_link_libraries(${PROJECT_BINARY} stdc++fs ${TENSORRT_LIBRARIES} ${PROJECT_SOURCE_DIR}/libs/libYoloLayerPlugin.a ${CUDAToolkit_LIBRARY_DIR}/libcudart.so)
-target_link_libraries(${PROJECT_LIBRARY} stdc++fs ${TENSORRT_LIBRARIES} ${PROJECT_SOURCE_DIR}/libs/libYoloLayerPlugin.a ${CUDAToolkit_LIBRARY_DIR}/libcudart.so)
+target_link_libraries(${PROJECT_BINARY} stdc++fs ${TENSORRT_LIBRARIES} ${CMAKE_BINARY_DIR}/plugins/libYoloLayerPlugin.a ${CUDAToolkit_LIBRARY_DIR}/libcudart.so)
+target_link_libraries(${PROJECT_LIBRARY} stdc++fs ${TENSORRT_LIBRARIES} ${CMAKE_BINARY_DIR}/plugins/libYoloLayerPlugin.a ${CUDAToolkit_LIBRARY_DIR}/libcudart.so)
 
 ##################
 ## Dependencies ##
