@@ -244,8 +244,13 @@ void DetectionNode::ProcessDetections( )
 			}
 		}
 	}
-		if (changed)
-			printDetections(trackers); 
+
+	if (changed || (m_framesSincePublish > 30)){
+		printDetections(trackers);
+		m_framesSincePublish = 0;
+
+	}
+	m_framesSincePublish++;
 }
 
 void DetectionNode::ProcessNextFrame()

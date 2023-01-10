@@ -61,6 +61,8 @@ private:
 	double m_loop_duration_image_small = 0.0;
 	double m_loop_duration_depth = 0.0;
 
+	int m_framesSincePublish = 0;
+
 
 	rclcpp::QoS m_qos_profile = rclcpp::SystemDefaultsQoS();
 	rclcpp::QoS m_qos_profile_sysdef = rclcpp::SystemDefaultsQoS();
