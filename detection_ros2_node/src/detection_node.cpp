@@ -114,7 +114,7 @@ void DetectionNode::init() {
 	m_pSortTrackers = new SORT[m_pYolo->GetClassCount()];
 	////// Initialize SORT tracker for each class
 	for (std::size_t i = 0; i < m_pYolo->GetClassCount(); i++)
-		m_pSortTrackers[i] = SORT(30, 5);
+		m_pSortTrackers[i] = SORT(60, 10);
 
 	m_lastTrackings.clear();
 
@@ -296,7 +296,7 @@ void DetectionNode::printDetections(const TrackingObjects& trackers)
 	}
 
 	if (m_print_detections)
-		RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+		RCLCPP_INFO(this->get_logger(), message.data.c_str());
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int32_t>(std::round(5))));
 	
@@ -347,6 +347,6 @@ void DetectionNode::PrintFPS(const float fps, const float itrTime)
 
 		
 	if (m_print_fps)
-		RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+		RCLCPP_INFO(this->get_logger(), message.data.c_str());
 
 }
