@@ -1,0 +1,3 @@
+[submodule "detection_ros2_node/include/3rdParty/trt-yolo-pt-interface"]
+	path = detection_ros2_node/include/3rdParty/trt-yolo-pt-interface
+	url = https://gitlab.ub.uni-bielefeld.de/fporrmann/trt-yolo-pt-interface.git
