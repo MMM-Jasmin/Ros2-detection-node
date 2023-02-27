@@ -24,19 +24,12 @@
     # Use 16-Bit floating point units (this is automatically enabled when DLAs are used)
     USE_FP16: true
     ONNX_FILE: "/opt/dev/DL_Models/yolo_object/model/yolov4-416.onnx"
-    CONFIG_FILE: "/opt/dev/DL_Models/yolo_object/model/yolov4-416.cfg"
     # If the engine file is not present the engine is build
     ENGINE_FILE: "/opt/dev/engines/yolov4-416_dla0.engine"
     CLASS_FILE: "/opt/dev/DL_Models/yolo_object/model/coco.names"
     DETECT_STR: "DETECTED_OBJECTS"
     AMOUNT_STR: "DETECTED_OBJECTS_AMOUNT"
     FPS_STR: "OBJECT_DET_FPS"
-    # Valid Versions are 3 and 4
-    YOLO_VERSION: 4
-    #Valid values are:
-    # true  - Tiny
-    # false - Normal
-    YOLO_TINY: false
     YOLO_THRESHOLD: 0.25
 
 
@@ -49,7 +42,7 @@
     # rotate images?
     rotation: 0    
     # image source topic
-    topic: "/background/color_small_full_608"
+    topic: "/background/color_small_640"
     print_detections: false
     print_fps: true
     det_topic: "/gesture_det/gestures"
@@ -66,22 +59,15 @@
     DLA_CORE: -1
     # Use 16-Bit floating point units (this is automatically enabled when DLAs are used)
     USE_FP16: true
-    ONNX_FILE: "/opt/dev/DL_Models/yolo_hand/model/yolov4-tiny-3l-2-608.onnx"
-    CONFIG_FILE: "/opt/dev/DL_Models/yolo_hand/model/yolov4-tiny-3l-2-608.cfg"
+    ONNX_FILE: "/opt/dev/DL_Models/yolo_hand/model/yolov7-hand-nms.onnx"
     # If the engine file is not present the engine is build
-    ENGINE_FILE: "/opt/dev/engines/yolov4-tiny-3l-2-608-dla1.engine"
-    CLASS_FILE: "/opt/dev/DL_Models/yolo_hand/model/hand.names"
+    ENGINE_FILE: "/opt/dev/engines/yolov7-hand-nms-dla-1.engine"
+    CLASS_FILE: "/opt/dev/DL_Models/yolo_hand/model/hand_set.names"
 
     DETECT_STR: "DETECTED_GESTURES"
     AMOUNT_STR: "DETECTED_GESTURES_AMOUNT"
     FPS_STR: "GESTURE_DET_FPS"
-    # Valid Versions are 3 and 4
-    YOLO_VERSION: 4
-    #Valid values are:
-    # true  - Tiny
-    # false - Normal
-    YOLO_TINY: true
 
-    YOLO_THRESHOLD: 0.25
+    YOLO_THRESHOLD: 0.20
 
     

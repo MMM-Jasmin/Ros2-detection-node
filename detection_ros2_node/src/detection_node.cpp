@@ -1,6 +1,5 @@
 #include "detection_node.hpp"
 
-#include "YoloTRT.h"
 #include "SORT.h"
 
 const double ONE_SECOND            = 1000.0; // One second in milliseconds
@@ -92,24 +91,12 @@ void DetectionNode::init() {
 	this->get_parameter("qos_sensor_data", qos_sensor_data);
 	this->get_parameter("qos_history_depth", qos_history_depth);
 
-	YoloType yoloType = YoloType::NON;
-
-		if (YOLO_VERSION == 3)
-			yoloType |= YoloType::YOLO_V3;
-		else if (YOLO_VERSION == 4)
-			yoloType |= YoloType::YOLO_V4;
-		else
-			std::cerr << "Invalid version (" << YOLO_VERSION << ") specified in YOLO_VERSION" << std::endl;
-
-		if (YOLO_TINY == true)
-				yoloType |= YoloType::TINY;
-
 	std::cout << "-- init tensorrt --" << std::endl;
 
 	// Set TensorRT log level
 	TrtLog::gLogger.setReportableSeverity(TrtLog::Severity::kWARNING);
 
-	m_pYolo = new YoloTRT(ONNX_FILE, CONFIG_FILE, ENGINE_FILE, CLASS_FILE, DLA_CORE, USE_FP16, true, YOLO_THRESHOLD, yoloType);
+	m_pYolo = new YoloPTTRT(ONNX_FILE, ENGINE_FILE, CLASS_FILE, DLA_CORE, USE_FP16, true, YOLO_THRESHOLD);
 
 	m_pSortTrackers = new SORT[m_pYolo->GetClassCount()];
 	////// Initialize SORT tracker for each class
@@ -212,7 +199,7 @@ void DetectionNode::ProcessDetections( )
 
 	std::map<uint32_t, TrackingObjects> trackingDets;
 
-	for (const YoloResult& r : m_yoloResults)
+	for (const YoloPTTRT::YoloPTResult& r : m_yoloResults)
 	{
 		trackingDets.try_emplace(r.ClassID(), TrackingObjects());
 		trackingDets[r.ClassID()].push_back({ { r.x, r.y, r.w, r.h }, static_cast<uint32_t>(std::round(r.Conf() * 100)), m_pYolo->ClassName(r.ClassID()) });

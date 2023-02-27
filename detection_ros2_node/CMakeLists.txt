@@ -21,10 +21,7 @@ set(PROJECT_LIBRARY ${PROJECT_NAME}_lib)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Build YoloLayer Plugin
-add_subdirectory(plugins)
-
-find_package(TENSORRT PATHS cmake/modules REQUIRED)
+add_subdirectory(include/3rdParty/trt-yolo-pt-interface)
 
 file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.c)
 #file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/*.h ${PROJECT_SOURCE_DIR}/include/ )
@@ -39,12 +36,10 @@ include_directories(SYSTEM
 ${TENSORRT_INCLUDE_DIRS}
 ${CUDAToolkit_INCLUDE_DIRS}
 include/3rdParty/inipp
-include/3rdParty/nvidia
+${trt_yolo_pt_intf_inc}
 )
 
-include_directories(include/${PROJECT_NAME} plugins)
-
-link_directories(${CMAKE_BINARY_DIR}/plugins)
+include_directories(include/${PROJECT_NAME} )
 
 ##############
 ## Compiler ##
@@ -70,12 +65,9 @@ set_target_properties(${PROJECT_BINARY}
 )
 
 
-add_dependencies(${PROJECT_BINARY} YoloLayerPlugin)
-add_dependencies(${PROJECT_LIBRARY} YoloLayerPlugin)
-
 # Filesystem
-target_link_libraries(${PROJECT_BINARY} stdc++fs ${TENSORRT_LIBRARIES} ${CMAKE_BINARY_DIR}/plugins/libYoloLayerPlugin.a ${CUDAToolkit_LIBRARY_DIR}/libcudart.so)
-target_link_libraries(${PROJECT_LIBRARY} stdc++fs ${TENSORRT_LIBRARIES} ${CMAKE_BINARY_DIR}/plugins/libYoloLayerPlugin.a ${CUDAToolkit_LIBRARY_DIR}/libcudart.so)
+target_link_libraries(${PROJECT_BINARY} stdc++fs ${trt_yolo_pt_intf_libs} )
+target_link_libraries(${PROJECT_LIBRARY} stdc++fs ${trt_yolo_pt_intf_libs})
 
 ##################
 ## Dependencies ##

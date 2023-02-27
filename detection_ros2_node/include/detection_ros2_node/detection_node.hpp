@@ -12,8 +12,9 @@
 // PROJECT
 #include "camera_interfaces/msg/depth_frameset.hpp"
 
-#include "Types.h"
+#include <YoloPTTRT.h>
 #include "Timer.h"
+#include "Types.h"
 
 
 /**
@@ -44,8 +45,9 @@ private:
 	TrackingObjects m_lastTrackings; // Vector containing the last tracked objects
 	class SORT* m_pSortTrackers;           // Pointer to n-sort trackers (n = number of classes)
 
-	class YoloTRT* m_pYolo;                          // Pointer to a TensorRT Yolo object used to process the input image
-	YoloResults m_yoloResults; // Buffer for the yolo results
+	//class YoloTRT* m_pYolo;                          // Pointer to a TensorRT Yolo object used to process the input image
+	class YoloPTTRT* m_pYolo;
+	YoloPTTRT::YoloPTResults m_yoloResults; // Buffer for the yolo results
 
 	cv::Mat m_frame; // Buffer for the input frame
 
