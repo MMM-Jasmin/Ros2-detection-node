@@ -9,7 +9,6 @@ const double ONE_SECOND            = 1000.0; // One second in milliseconds
  */
 DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeOptions().use_intra_process_comms(false)) 
 {
-	this->declare_parameter("rotation", 0);
 	this->declare_parameter("debug", false);
 	this->declare_parameter("topic", "");
 	this->declare_parameter("print_detections", true);
@@ -85,7 +84,6 @@ void DetectionNode::init() {
 	this->get_parameter("DETECT_STR", m_DETECT_STR);
     this->get_parameter("AMOUNT_STR", m_AMOUNT_STR);
     this->get_parameter("FPS_STR", m_FPS_STR);
-	this->get_parameter("rotation", m_image_rotation);
 	this->get_parameter("print_detections", m_print_detections);
 	this->get_parameter("print_fps", m_print_fps);
 	this->get_parameter("qos_sensor_data", qos_sensor_data);
@@ -157,13 +155,6 @@ void DetectionNode::imageSmallCallback(sensor_msgs::msg::Image::SharedPtr img_ms
 	cv::Size image_size(static_cast<int>(img_msg->width), static_cast<int>(img_msg->height));
 	cv::Mat color_image(image_size, CV_8UC3, (void *)img_msg->data.data(), cv::Mat::AUTO_STEP);
 	
-	if (m_image_rotation == 90)
-		cv::rotate(color_image, color_image, cv::ROTATE_90_CLOCKWISE);
-	else if (m_image_rotation == 180)
-		cv::rotate(color_image, color_image, cv::ROTATE_180);
-	else if (m_image_rotation == 270)
-		cv::rotate(color_image, color_image, cv::ROTATE_90_COUNTERCLOCKWISE); 
-
 	m_frame = color_image;
 
 	ProcessNextFrame();
