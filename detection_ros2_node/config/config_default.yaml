@@ -4,7 +4,7 @@
     # print debug output
     debug: true
     # image source topic
-    topic: "/background/color_small_416"
+    topic: "/background/color_small_full_640_kar"
     print_detections: false
     print_fps: true
     det_topic: "/object_det/objects"
