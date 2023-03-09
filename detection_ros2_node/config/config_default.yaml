@@ -38,7 +38,7 @@
     # print debug output
     debug: true
     # image source topic
-    topic: "/background/color_small_full_640_kar"
+    topic: "/background/color_small_full_640_kar_limited"
     print_detections: false
     print_fps: true
     det_topic: "/gesture_det/gestures"
