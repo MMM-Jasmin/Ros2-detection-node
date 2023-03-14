@@ -4,7 +4,7 @@
     # print debug output
     debug: true
     # image source topic
-    topic: "/background/color_small_full_640_kar"
+    topic: "/background/color_small_limited"
     print_detections: false
     print_fps: true
     det_topic: "/object_det/objects"
@@ -38,7 +38,7 @@
     # print debug output
     debug: true
     # image source topic
-    topic: "/background/color_small_full_640_kar_limited"
+    topic: "/background/color_small_limited"
     print_detections: false
     print_fps: true
     det_topic: "/gesture_det/gestures"
@@ -55,9 +55,9 @@
     DLA_CORE: -1
     # Use 16-Bit floating point units (this is automatically enabled when DLAs are used)
     USE_FP16: true
-    ONNX_FILE: "/opt/dev/DL_Models/yolo_human/model/yolov7-tiny-hand-nms.onnx"
+    ONNX_FILE: "/opt/dev/DL_Models/yolo_human/model/yolov7-tiny-hand-tl-mns-640.onnx"
     # If the engine file is not present the engine is build
-    ENGINE_FILE: "/opt/dev/engines/yolov7-tiny-hand-nms-dla-1.engine"
+    ENGINE_FILE: "/opt/dev/engines/yolov7-tiny-hand-tl-mns-640-dla-1.engine"
     CLASS_FILE: "/opt/dev/DL_Models/yolo_human/data/hand_set.names"
 
     DETECT_STR: "DETECTED_GESTURES"

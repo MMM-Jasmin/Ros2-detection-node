@@ -155,9 +155,7 @@ void DetectionNode::imageSmallCallback(sensor_msgs::msg::Image::SharedPtr img_ms
 	cv::Size image_size(static_cast<int>(img_msg->width), static_cast<int>(img_msg->height));
 	cv::Mat color_image(image_size, CV_8UC3, (void *)img_msg->data.data(), cv::Mat::AUTO_STEP);
 	
-	m_frame = color_image;
-
-	ProcessNextFrame();
+	ProcessNextFrame(color_image);
 	ProcessDetections();
 	
 	m_frameCnt++;
@@ -231,10 +229,10 @@ void DetectionNode::ProcessDetections( )
 	m_framesSincePublish++;
 }
 
-void DetectionNode::ProcessNextFrame()
+void DetectionNode::ProcessNextFrame(cv::Mat &img)
 {
-	if (!m_frame.empty())
-		m_yoloResults = m_pYolo->Infer(m_frame);
+	if (!img.empty())
+		m_yoloResults = m_pYolo->Infer(img);
 } 
 
 BBox DetectionNode::toCenter(const BBox& bBox)
