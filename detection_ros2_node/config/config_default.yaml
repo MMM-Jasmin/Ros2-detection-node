@@ -21,10 +21,10 @@
     DLA_CORE: -1
     # Use 16-Bit floating point units (this is automatically enabled when DLAs are used)
     USE_FP16: true
-    ONNX_FILE: "/opt/dev/DL_Models/yolo_object/model/yolov4-416.onnx"
+    ONNX_FILE: "/opt/dev/DL_Models/yolo_object/model/yolov7-nms-640.onnx"
     # If the engine file is not present the engine is build
-    ENGINE_FILE: "/opt/dev/engines/yolov4-416_dla0.engine"
-    CLASS_FILE: "/opt/dev/DL_Models/yolo_object/model/coco.names"
+    ENGINE_FILE: "/opt/dev/engines/yolov7-nms-640_dla-1.engine"
+    CLASS_FILE: "/opt/dev/DL_Models/yolo_object/data/coco.names"
     DETECT_STR: "DETECTED_OBJECTS"
     AMOUNT_STR: "DETECTED_OBJECTS_AMOUNT"
     FPS_STR: "OBJECT_DET_FPS"

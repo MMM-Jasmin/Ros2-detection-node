@@ -1,6 +1,7 @@
 #include "detection_node.hpp"
 
 #include "SORT.h"
+//#include "detection_ros2_node/msg/string_stamped.hpp"
 
 const double ONE_SECOND            = 1000.0; // One second in milliseconds
 
@@ -118,14 +119,14 @@ void DetectionNode::init() {
 	//m_qos_profile = m_qos_profile.lifespan(std::chrono::milliseconds(500));
 	m_qos_profile = m_qos_profile.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
 	//m_qos_profile = m_qos_profile.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
-	m_qos_profile = m_qos_profile.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+	//m_qos_profile = m_qos_profile.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
 	
 
 	m_qos_profile_sysdef = m_qos_profile_sysdef.keep_last(qos_history_depth);
 	//m_qos_profile_sysdef = m_qos_profile_sysdef.lifespan(std::chrono::milliseconds(500));
 	m_qos_profile_sysdef = m_qos_profile_sysdef.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
 	//m_qos_profile_sysdef = m_qos_profile_sysdef.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
-	m_qos_profile_sysdef = m_qos_profile_sysdef.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+	//m_qos_profile_sysdef = m_qos_profile_sysdef.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
 	
 
 	
@@ -140,8 +141,9 @@ void DetectionNode::init() {
 
 	std::cout << "-- create topics for publishing --" << std::endl;
 
-	m_detection_publisher   = this->create_publisher<std_msgs::msg::String>(det_topic, m_qos_profile_sysdef);
-	m_fps_publisher    		= this->create_publisher<std_msgs::msg::String>(fps_topic, m_qos_profile_sysdef);
+	m_detection_publisher   		= this->create_publisher<std_msgs::msg::String>(det_topic, m_qos_profile_sysdef);
+	m_detectionStamped_publisher 	= this->create_publisher<sm_interfaces::msg::StringStamped>(det_topic + "Stamped", m_qos_profile_sysdef);
+	m_fps_publisher    				= this->create_publisher<std_msgs::msg::String>(fps_topic, m_qos_profile_sysdef);
 
 	std::cout << "+==========[ init done ]==========+" << std::endl;
 
@@ -266,8 +268,15 @@ void DetectionNode::printDetections(const TrackingObjects& trackers)
 
 	auto message = std_msgs::msg::String();
 	message.data = str.str();
+
+	auto messageStamped = sm_interfaces::msg::StringStamped();
+	messageStamped.data = str.str();
+	messageStamped.header.stamp    = this->get_clock()->now();
+
+
 	try{
 		m_detection_publisher->publish(message);
+		m_detectionStamped_publisher->publish(messageStamped);
 	}
 	catch (...) {
 		RCLCPP_INFO(this->get_logger(), "hmm publishing dets has failed!! ");

@@ -10,7 +10,7 @@
 #include <opencv2/opencv.hpp>
 
 // PROJECT
-#include "camera_interfaces/msg/depth_frameset.hpp"
+#include "sm_interfaces/msg/string_stamped.hpp"
 
 #include <YoloPTTRT.h>
 #include "Timer.h"
@@ -67,6 +67,7 @@ private:
 	rclcpp::QoS m_qos_profile_sysdef = rclcpp::SystemDefaultsQoS();
 	
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_detection_publisher 	= nullptr;
+	rclcpp::Publisher<sm_interfaces::msg::StringStamped>::SharedPtr m_detectionStamped_publisher 	= nullptr;
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_fps_publisher 	=	 nullptr;
 
 	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr m_image_small_subscription;
