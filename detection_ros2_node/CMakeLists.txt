@@ -11,7 +11,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_WARN_DEPRECATED FALSE)
 set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS TRUE)
 
-
 #############
 ## Project ##
 #############
@@ -64,7 +63,6 @@ set_target_properties(${PROJECT_BINARY}
 		CXX_EXTENSIONS YES
 )
 
-
 # Filesystem
 target_link_libraries(${PROJECT_BINARY} stdc++fs ${trt_yolo_pt_intf_libs} )
 target_link_libraries(${PROJECT_LIBRARY} stdc++fs ${trt_yolo_pt_intf_libs})
@@ -90,23 +88,9 @@ message(STATUS "+===================================")
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(message_filters REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(tf2_eigen REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
-find_package(pcl_conversions REQUIRED)
-find_package(image_transport REQUIRED)
-find_package(camera_interfaces REQUIRED)
-
-# Preprocessor define for ros2 distribution eloquent elusor
-if ($ENV{ROS_DISTRO} STREQUAL "eloquent")
-	target_compile_definitions(${PROJECT_BINARY} PRIVATE ROS_ELOQUENT)
-	target_compile_definitions(${PROJECT_LIBRARY} PRIVATE ROS_ELOQUENT)
-endif ()
-message(STATUS "+==========[ ROS2 ]===========")
-message(STATUS "|  Distribution:\t" $ENV{ROS_DISTRO})
-message(STATUS "+===================================")
+find_package(sm_interfaces REQUIRED)
 
 ###########
 ## Build ##
@@ -121,15 +105,9 @@ ament_target_dependencies(
 	${PROJECT_BINARY}
 	"rclcpp"
 	"sensor_msgs"
-	"message_filters"
-	"tf2_ros"
-	"tf2_eigen"
+	"std_msgs"
 	"ament_index_cpp"
-	"tf2_geometry_msgs"
-	"pcl_conversions"
-	"image_transport"
-
-	"camera_interfaces"
+	"sm_interfaces"
 )
 
 # library
@@ -137,15 +115,9 @@ ament_target_dependencies(
 	${PROJECT_LIBRARY}
 	"rclcpp"
 	"sensor_msgs"
-	"message_filters"
-	"tf2_ros"
-	"tf2_eigen"
+	"std_msgs"
 	"ament_index_cpp"
-	"tf2_geometry_msgs"
-	"pcl_conversions"
-	"image_transport"
-
-	"camera_interfaces"
+	"sm_interfaces"
 )
 
 #############
