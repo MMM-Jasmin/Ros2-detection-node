@@ -41,7 +41,6 @@ public:
 	KalmanBoxTracker(const BBox &initRect = BBox(), const std::string &name = "") :
 		m_kf(cv::KalmanFilter(DIM_X, DIM_Z, 0)),
 		m_measurement(cv::Mat::zeros(DIM_Z, 1, CV_32F)),
-		m_history(),
 		m_timeSinceUpdate(0),
 		m_hits(0),
 		m_hitStreak(0),
@@ -103,7 +102,6 @@ public:
 
 		BBox predictBox = getRectXysr(p.at<float>(0, 0), p.at<float>(1, 0), p.at<float>(2, 0), p.at<float>(3, 0));
 
-		m_history.push_back(predictBox);
 		return predictBox;
 	}
 
@@ -113,7 +111,6 @@ public:
 		m_name = name;
 
 		m_timeSinceUpdate = 0;
-		m_history.clear();
 		m_hits++;
 		m_hitStreak++;
 
@@ -168,7 +165,6 @@ private:
 private:
 	cv::KalmanFilter m_kf;
 	cv::Mat m_measurement;
-	BBoxes m_history;
 
 	uint32_t m_timeSinceUpdate;
 	uint32_t m_hits;
