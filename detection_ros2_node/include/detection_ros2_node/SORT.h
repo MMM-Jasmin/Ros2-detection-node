@@ -95,7 +95,6 @@ public:
 		}
 
 		std::set<int32_t> unmatchedDetections;
-		std::set<int32_t> unmatchedTrajectories;
 		std::set<int32_t> allItems;
 		std::set<int32_t> matchedItems;
 		std::vector<cv::Point> matchedPairs;
@@ -108,16 +107,7 @@ public:
 			for (uint32_t i = 0; i < trkNum; i++)
 				matchedItems.insert(assignment[i]);
 
-			std::set_difference(allItems.begin(), allItems.end(), matchedItems.begin(), matchedItems.end(),
-								std::insert_iterator<std::set<int32_t>>(unmatchedDetections, unmatchedDetections.begin()));
-		}
-		else if (detNum < trkNum) // there are unmatched trajectory/predictions
-		{
-			for (uint32_t i = 0; i < trkNum; i++)
-			{
-				if (assignment[i] == -1) // unassigned label will be set as -1 in the assignment algorithm
-					unmatchedTrajectories.insert(i);
-			}
+			std::set_difference(allItems.begin(), allItems.end(), matchedItems.begin(), matchedItems.end(), std::insert_iterator<std::set<int32_t>>(unmatchedDetections, unmatchedDetections.begin()));
 		}
 
 		// filter out matched with low IOU
@@ -128,7 +118,6 @@ public:
 
 			if (1 - iouMatrix[i][assignment[i]] < IOU_THRESHOLD)
 			{
-				unmatchedTrajectories.insert(i);
 				unmatchedDetections.insert(assignment[i]);
 			}
 			else
@@ -163,11 +152,11 @@ public:
 			if (it->GetTimeSinceUpdate() < 1 && (it->GetHitStreak() >= m_minHits || m_frameCount <= m_minHits))
 				frameTrackingResult.push_back(TrackingObject(it->GetState(), 0, it->GetName(), it->GetID() + 1));
 
-			it++;
-
 			// remove dead tracklet
 			if (it != m_trackers.end() && it->GetTimeSinceUpdate() > m_maxAge)
 				it = m_trackers.erase(it);
+			else
+				it++;
 		}
 
 		return frameTrackingResult;
