@@ -10,7 +10,6 @@ const double ONE_SECOND            = 1000.0; // One second in milliseconds
  */
 DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeOptions().use_intra_process_comms(false)) 
 {
-	this->declare_parameter("debug", false);
 	this->declare_parameter("topic", "");
 	this->declare_parameter("print_detections", true);
 	this->declare_parameter("print_fps", true);
@@ -23,14 +22,11 @@ DetectionNode::DetectionNode(const std::string &name) : Node(name, rclcpp::NodeO
     this->declare_parameter("DLA_CORE", 0);
     this->declare_parameter("USE_FP16", true);
     this->declare_parameter("ONNX_FILE", "");
-    this->declare_parameter("CONFIG_FILE", "");
     this->declare_parameter("ENGINE_FILE" , "");
     this->declare_parameter("CLASS_FILE", "");
     this->declare_parameter("DETECT_STR", "");
     this->declare_parameter("AMOUNT_STR", "");
     this->declare_parameter("FPS_STR", "");
-    this->declare_parameter("YOLO_VERSION", 4);
-    this->declare_parameter("YOLO_TINY", true);
     this->declare_parameter("YOLO_THRESHOLD", 0.3);	
 
 	callback_handle_ = this->add_on_set_parameters_callback(std::bind(&DetectionNode::parametersCallback, this, std::placeholders::_1));
@@ -55,11 +51,10 @@ rcl_interfaces::msg::SetParametersResult DetectionNode::parametersCallback(const
  */
 void DetectionNode::init() {
 
-
-	int YOLO_VERSION, DLA_CORE, qos_history_depth;
-	bool USE_FP16, YOLO_TINY, qos_sensor_data;
+	int DLA_CORE, qos_history_depth;
+	bool USE_FP16, qos_sensor_data;
 	float YOLO_THRESHOLD;
-	std::string ONNX_FILE, CONFIG_FILE, ENGINE_FILE, CLASS_FILE, ros_topic, det_topic, fps_topic;
+	std::string ONNX_FILE, ENGINE_FILE, CLASS_FILE, ros_topic, det_topic, fps_topic;
 
 	std::cout << "-- get ros config variables --" << std::endl;
 
@@ -73,11 +68,8 @@ void DetectionNode::init() {
  	this->get_parameter("DLA_CORE", DLA_CORE);
     this->get_parameter("USE_FP16", USE_FP16);
     this->get_parameter("ONNX_FILE", ONNX_FILE);
-    this->get_parameter("CONFIG_FILE", CONFIG_FILE);
     this->get_parameter("ENGINE_FILE" , ENGINE_FILE);
     this->get_parameter("CLASS_FILE", CLASS_FILE);
-    this->get_parameter("YOLO_VERSION", YOLO_VERSION);
-    this->get_parameter("YOLO_TINY", YOLO_TINY);
     this->get_parameter("YOLO_THRESHOLD", YOLO_THRESHOLD);	
 
 	// some things needs to be member
@@ -160,6 +152,7 @@ void DetectionNode::imageSmallCallback(sensor_msgs::msg::Image::SharedPtr img_ms
 	cv::Mat color_image(image_size, CV_8UC3, (void *)img_msg->data.data(), cv::Mat::AUTO_STEP);
 	
 	ProcessNextFrame(color_image);
+
 	ProcessDetections();
 	
 	m_frameCnt++;
@@ -201,6 +194,8 @@ void DetectionNode::ProcessDetections( )
 	TrackingObjects trackers;
 	TrackingObjects dets;
 
+	//std::cout << trackingDets.size() << std::endl;
+	
 	for (std::size_t i = 0; i < m_pYolo->GetClassCount(); i++)
 	{
 		if (trackingDets.count(i))
