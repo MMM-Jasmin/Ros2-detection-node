@@ -138,7 +138,6 @@ void DetectionNode::init() {
 	m_fps_publisher    				= this->create_publisher<std_msgs::msg::String>(fps_topic, m_qos_profile_sysdef);
 
 	std::cout << "+==========[ init done ]==========+" << std::endl;
-
 }
 
 
